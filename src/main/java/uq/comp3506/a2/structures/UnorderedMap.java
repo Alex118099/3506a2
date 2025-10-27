@@ -2,6 +2,9 @@
 
 package uq.comp3506.a2.structures;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 /**
  * Supplied by the COMP3506/7505 teaching team, Semester 2, 2025.
  * <p>
@@ -10,18 +13,79 @@ package uq.comp3506.a2.structures;
  */
 public class UnorderedMap<K, V> implements MapInterface<K, V> {
 
+    /**
+     * Inner class to store key-value pairs (entries)
+     */
+    private class MapEntry {
+        K key;
+        V value;
+        
+        MapEntry(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
 
     /**
-     * you will need to put some member variables here to track your
-     * data, size, capacity, etc...
+     * Member variables to track data, size, capacity, etc.
      */
-    private int exampleVariable = -1;
+    private ArrayList<LinkedList<MapEntry>> buckets;
+    private int size;
+    private int capacity;
+    private static final int DEFAULT_CAPACITY = 16;
+    private static final double LOAD_FACTOR = 0.75;
 
     /**
      * Constructs an empty UnorderedMap
      */
     public UnorderedMap() {
-        // Implement me!
+        this.capacity = DEFAULT_CAPACITY;
+        this.size = 0;
+        this.buckets = new ArrayList<>(capacity);
+        
+        // Initialize all buckets with empty LinkedLists
+        for (int i = 0; i < capacity; i++) {
+            buckets.add(new LinkedList<>());
+        }
+    }
+
+    /**
+     * Hash function to convert key to bucket index
+     * @param key the key to hash
+     * @return the bucket index
+     */
+    private int hash(K key) {
+        if (key == null) {
+            return 0; // Handle null keys by placing them in bucket 0
+        }
+        // Use Math.abs to ensure non-negative index
+        // Use Math.floorMod to handle negative hashCodes properly
+        return Math.floorMod(key.hashCode(), capacity);
+    }
+
+    /**
+     * Resizes the hash table when load factor is exceeded
+     */
+    private void resize() {
+        // Save old buckets
+        ArrayList<LinkedList<MapEntry>> oldBuckets = buckets;
+        
+        // Double the capacity
+        capacity = capacity * 2;
+        size = 0;
+        
+        // Create new buckets
+        buckets = new ArrayList<>(capacity);
+        for (int i = 0; i < capacity; i++) {
+            buckets.add(new LinkedList<>());
+        }
+        
+        // Rehash all entries from old buckets
+        for (LinkedList<MapEntry> bucket : oldBuckets) {
+            for (MapEntry entry : bucket) {
+                put(entry.key, entry.value);
+            }
+        }
     }
 
     /**
@@ -30,8 +94,7 @@ public class UnorderedMap<K, V> implements MapInterface<K, V> {
      */
     @Override
     public int size() {
-        // Implement me!
-        return -1;
+        return size;
     }
 
     /**
@@ -40,7 +103,7 @@ public class UnorderedMap<K, V> implements MapInterface<K, V> {
      */
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     /**
@@ -50,7 +113,11 @@ public class UnorderedMap<K, V> implements MapInterface<K, V> {
      */
     @Override
     public void clear() {
-        // Implement me!
+        // Clear all buckets
+        for (LinkedList<MapEntry> bucket : buckets) {
+            bucket.clear();
+        }
+        size = 0;
     }
 
     /**
@@ -64,7 +131,28 @@ public class UnorderedMap<K, V> implements MapInterface<K, V> {
      */
     @Override
     public V put(K key, V value) {
-        // Implement me!
+        // Check if we need to resize
+        if (size >= capacity * LOAD_FACTOR) {
+            resize();
+        }
+        
+        // Get the bucket for this key
+        int index = hash(key);
+        LinkedList<MapEntry> bucket = buckets.get(index);
+        
+        // Check if key already exists in the bucket
+        for (MapEntry entry : bucket) {
+            if (key == null ? entry.key == null : key.equals(entry.key)) {
+                // Key exists, update value and return old value
+                V oldValue = entry.value;
+                entry.value = value;
+                return oldValue;
+            }
+        }
+        
+        // Key doesn't exist, add new entry
+        bucket.add(new MapEntry(key, value));
+        size++;
         return null;
     }
 
@@ -77,7 +165,18 @@ public class UnorderedMap<K, V> implements MapInterface<K, V> {
      */
     @Override
     public V get(K key) {
-        // Implement me!
+        // Get the bucket for this key
+        int index = hash(key);
+        LinkedList<MapEntry> bucket = buckets.get(index);
+        
+        // Search for the key in the bucket
+        for (MapEntry entry : bucket) {
+            if (key == null ? entry.key == null : key.equals(entry.key)) {
+                return entry.value;
+            }
+        }
+        
+        // Key not found
         return null;
     }
 
@@ -90,7 +189,22 @@ public class UnorderedMap<K, V> implements MapInterface<K, V> {
      */
     @Override
     public V remove(K key) {
-        // Implement me!
+        // Get the bucket for this key
+        int index = hash(key);
+        LinkedList<MapEntry> bucket = buckets.get(index);
+        
+        // Search for the key in the bucket
+        for (MapEntry entry : bucket) {
+            if (key == null ? entry.key == null : key.equals(entry.key)) {
+                // Found the key, remove it and return its value
+                V value = entry.value;
+                bucket.remove(entry);
+                size--;
+                return value;
+            }
+        }
+        
+        // Key not found
         return null;
     } 
 
