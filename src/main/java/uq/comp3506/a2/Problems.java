@@ -147,17 +147,18 @@ public class Problems {
             return false;
         }
 
+        boolean hasCycle = false;
         for (Vertex<S> neighbor : neighbors) {
             if (!visited.contains(neighbor)) {
                 if (dfsDetectCycle(neighbor, vertex, visited, componentVertices, adjacencyList)) {
-                    return true;
+                    hasCycle = true;
                 }
             } else if (!neighbor.equals(parent)) {
-                return true;
+                hasCycle = true;
             }
         }
         
-        return false;
+        return hasCycle;
     }
  
     /**
