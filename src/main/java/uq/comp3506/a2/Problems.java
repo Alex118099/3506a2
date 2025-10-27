@@ -11,7 +11,11 @@ import uq.comp3506.a2.structures.Tunnel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 // This is part of COMP3506 Assignment 2. Students must implement their own solutions.
 
@@ -37,33 +41,25 @@ public class Problems {
      * Note: We promise that the input List will be an ArrayList.
      */
     public static double tunnelLighting(int tunnelLength, List<Integer> lightIntervals) {
-        // 边界情况：没有灯
         if (lightIntervals == null || lightIntervals.isEmpty()) {
             return -1;
         }
-        
-        // 对灯的位置进行排序
+
         Collections.sort(lightIntervals);
         
-        // 初始化最大半径为0
+
         double maxRadius = 0.0;
-        
-        // 检查起点到第一个灯的距离
-        // 第一个灯必须能照亮从0到它自己的位置
+
         double startDistance = lightIntervals.get(0) - 0;
         maxRadius = Math.max(maxRadius, startDistance);
-        
-        // 检查相邻灯之间的间隙
-        // 两个灯之间的间隙需要两边的灯共同照亮
-        // 所以每个灯只需要照亮一半的距离
+
         for (int i = 0; i < lightIntervals.size() - 1; i++) {
             double gap = lightIntervals.get(i + 1) - lightIntervals.get(i);
             double requiredRadius = gap / 2.0;
             maxRadius = Math.max(maxRadius, requiredRadius);
         }
         
-        // 检查最后一个灯到终点的距离
-        // 最后一个灯必须能照亮到隧道的终点
+
         double endDistance = tunnelLength - lightIntervals.get(lightIntervals.size() - 1);
         maxRadius = Math.max(maxRadius, endDistance);
         
@@ -80,8 +76,88 @@ public class Problems {
      * vertices.
      */
     public static <S, U> TopologyType topologyDetection(List<Edge<S, U>> edgeList) {
-        TopologyType dummy = TopologyType.UNKNOWN;
-        return dummy;
+        if (edgeList == null || edgeList.isEmpty()) {
+            return TopologyType.UNKNOWN;
+        }
+
+        Map<Vertex<S>, List<Vertex<S>>> adjacencyList = new HashMap<>();
+        Set<Vertex<S>> allVertices = new HashSet<>();
+
+        for (Edge<S, U> edge : edgeList) {
+            Vertex<S> v1 = edge.getVertex1();
+            Vertex<S> v2 = edge.getVertex2();
+            
+            allVertices.add(v1);
+            allVertices.add(v2);
+            
+            adjacencyList.computeIfAbsent(v1, k -> new ArrayList<>()).add(v2);
+            adjacencyList.computeIfAbsent(v2, k -> new ArrayList<>()).add(v1);
+        }
+
+        if (allVertices.isEmpty()) {
+            return TopologyType.UNKNOWN;
+        }
+
+        Set<Vertex<S>> visited = new HashSet<>();
+        List<Boolean> componentHasCycle = new ArrayList<>();
+
+        for (Vertex<S> vertex : allVertices) {
+            if (!visited.contains(vertex)) {
+                Set<Vertex<S>> componentVertices = new HashSet<>();
+                boolean hasCycle = dfsDetectCycle(vertex, null, visited, componentVertices, adjacencyList);
+                componentHasCycle.add(hasCycle);
+            }
+        }
+
+        int numComponents = componentHasCycle.size();
+        
+        if (numComponents == 1) {
+            return componentHasCycle.get(0) ? TopologyType.CONNECTED_GRAPH : TopologyType.CONNECTED_TREE;
+        }
+
+        boolean hasTree = false;
+        boolean hasGraph = false;
+        
+        for (Boolean hasCycle : componentHasCycle) {
+            if (hasCycle) {
+                hasGraph = true;
+            } else {
+                hasTree = true;
+            }
+        }
+
+        if (hasTree && hasGraph) {
+            return TopologyType.HYBRID;
+        } else if (hasTree) {
+            return TopologyType.FOREST;
+        } else {
+            return TopologyType.DISCONNECTED_GRAPH;
+        }
+    }
+
+    private static <S> boolean dfsDetectCycle(Vertex<S> vertex, Vertex<S> parent, 
+                                              Set<Vertex<S>> visited, 
+                                              Set<Vertex<S>> componentVertices,
+                                              Map<Vertex<S>, List<Vertex<S>>> adjacencyList) {
+        visited.add(vertex);
+        componentVertices.add(vertex);
+        
+        List<Vertex<S>> neighbors = adjacencyList.get(vertex);
+        if (neighbors == null) {
+            return false;
+        }
+
+        for (Vertex<S> neighbor : neighbors) {
+            if (!visited.contains(neighbor)) {
+                if (dfsDetectCycle(neighbor, vertex, visited, componentVertices, adjacencyList)) {
+                    return true;
+                }
+            } else if (!neighbor.equals(parent)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
  
     /**
