@@ -10,6 +10,7 @@ import uq.comp3506.a2.structures.TopologyType;
 import uq.comp3506.a2.structures.Tunnel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // This is part of COMP3506 Assignment 2. Students must implement their own solutions.
@@ -36,7 +37,37 @@ public class Problems {
      * Note: We promise that the input List will be an ArrayList.
      */
     public static double tunnelLighting(int tunnelLength, List<Integer> lightIntervals) {
-        return -1;
+        // 边界情况：没有灯
+        if (lightIntervals == null || lightIntervals.isEmpty()) {
+            return -1;
+        }
+        
+        // 对灯的位置进行排序
+        Collections.sort(lightIntervals);
+        
+        // 初始化最大半径为0
+        double maxRadius = 0.0;
+        
+        // 检查起点到第一个灯的距离
+        // 第一个灯必须能照亮从0到它自己的位置
+        double startDistance = lightIntervals.get(0) - 0;
+        maxRadius = Math.max(maxRadius, startDistance);
+        
+        // 检查相邻灯之间的间隙
+        // 两个灯之间的间隙需要两边的灯共同照亮
+        // 所以每个灯只需要照亮一半的距离
+        for (int i = 0; i < lightIntervals.size() - 1; i++) {
+            double gap = lightIntervals.get(i + 1) - lightIntervals.get(i);
+            double requiredRadius = gap / 2.0;
+            maxRadius = Math.max(maxRadius, requiredRadius);
+        }
+        
+        // 检查最后一个灯到终点的距离
+        // 最后一个灯必须能照亮到隧道的终点
+        double endDistance = tunnelLength - lightIntervals.get(lightIntervals.size() - 1);
+        maxRadius = Math.max(maxRadius, endDistance);
+        
+        return maxRadius;
     }
 
     /**
