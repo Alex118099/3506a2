@@ -67,5 +67,39 @@ public class TestOrderedMap {
         System.out.println("Tree after clearing:");
         System.out.println("Is tree empty? " + tree.isEmpty());
         System.out.println("Final size: " + tree.size());
+
+        // 5. Test boundary cases for OrderedMap specific methods
+        System.out.println("\nTest Case 5: OrderedMap specific methods (nextGeq, nextLeq, keysInRange)");
+        OrderedMap<Integer, String> tree2 = new OrderedMap<>();
+        tree2.put(10, "Ten");
+        tree2.put(20, "Twenty");
+        tree2.put(30, "Thirty");
+        tree2.put(40, "Forty");
+        tree2.put(50, "Fifty");
+
+        // Test nextGeq
+        System.out.println("nextGeq(25): " + tree2.nextGeq(25));  // Should return "Thirty"
+        System.out.println("nextGeq(30): " + tree2.nextGeq(30));  // Should return "Thirty"
+        System.out.println("nextGeq(5): " + tree2.nextGeq(5));    // Should return "Ten"
+        System.out.println("nextGeq(60): " + tree2.nextGeq(60));  // Should return null
+
+        // Test nextLeq
+        System.out.println("nextLeq(25): " + tree2.nextLeq(25));  // Should return "Twenty"
+        System.out.println("nextLeq(30): " + tree2.nextLeq(30));  // Should return "Thirty"
+        System.out.println("nextLeq(60): " + tree2.nextLeq(60));  // Should return "Fifty"
+        System.out.println("nextLeq(5): " + tree2.nextLeq(5));    // Should return null
+
+        // Test keysInRange
+        System.out.println("keysInRange(15, 35): " + tree2.keysInRange(15, 35));
+        System.out.println("keysInRange(10, 50): " + tree2.keysInRange(10, 50));
+        System.out.println("keysInRange(60, 70): " + tree2.keysInRange(60, 70));
+
+        // 6. Test edge case: empty tree operations
+        System.out.println("\nTest Case 6: Empty tree operations");
+        OrderedMap<Integer, String> emptyTree = new OrderedMap<>();
+        System.out.println("Remove from empty tree: " + emptyTree.remove(10));
+        System.out.println("Get from empty tree: " + emptyTree.get(10));
+        System.out.println("nextGeq on empty tree: " + emptyTree.nextGeq(10));
+        System.out.println("nextLeq on empty tree: " + emptyTree.nextLeq(10));
     }
 }
