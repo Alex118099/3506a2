@@ -1,9 +1,40 @@
 Submission counter: 0 << Keep track of your submission counts
 
-Student ID:
+Student ID: 49140772
 
 Statement
 ---------
+I used generative AI assistance for the following purposes in this assignment:
+
+in Heap, when implementing the downHeap(int i) method, I recognized that the downward 
+heapify process requires comparing the current node with both children simultaneously, 
+which is more complex than upHeap's single parent comparison. I consulted AI to verify my understanding of the three-way comparison logic and confirm the correct handling of cases where the right child might not exist.
+When implementing the removeMin() method, I identified the need to replace the root with the last element before removal. 
+I consulted AI to confirm the correctness of this "swap-with-last-then-remove" strategy and verify proper size management timing to avoid index errors.
+
+in OrderedMap, when implementing the delete(Node<K, V> node, K key) method, I recognized through my analysis that node deletion requires handling three distinct scenarios: leaf nodes, 
+nodes with one child, and nodes with two children. The two-child case proved most complex, requiring finding the in-order successor and performing a recursive deletion of that successor. 
+I consulted AI to verify my understanding of the successor replacement strategy and confirm the correctness of the recursive deletion logic that ensures the successor node is properly removed after being promoted.
+When implementing the balance(Node<K, V> node) method, I identified the need to handle four AVL tree imbalance cases: LL, LR, RR, and RL rotations. Through my analysis, 
+I recognized that LR and RL cases require double rotations (rotating the child first, then the parent). I consulted AI to verify my understanding of when to apply single versus 
+double rotations and confirm the correct order of rotation operations for each imbalance pattern.
+When implementing the insert(Node<K, V> node, K key, V value) method, I recognized the recursive insertion pattern and the need to maintain AVL properties through rebalancing. 
+I consulted AI to verify my approach for handling key collision cases (updating existing values) and confirm that balance() should be called on the recursive return path to maintain tree balance.
+
+in UnorderedMap, I found the hash table implementation particularly challenging. When implementing the resize() method, I struggled to understand the complete rehashing process. 
+Through my analysis, I recognized the critical need to reset size to 0 before rehashing—I initially couldn't grasp that failing to do this would cause double-counting when put() increments size during reinsertion. 
+I consulted AI to verify my understanding of the rehashing mechanics and clarify the trade-off between using put() for reinsertion versus directly calculating hash indices and inserting entries.
+
+in Problems, I found the graph algorithm implementations to be the most challenging part of the entire assignment.
+When implementing routeManagement() using Dijkstra's algorithm, I struggled with managing multiple complex data structures simultaneously: the adjacency list representation, distance tracking map, 
+priority queue, and visited set. Through my analysis, I recognized the critical need for the relaxation operation and threshold filtering at two points—both when processing nodes and when adding to the priority queue. 
+I consulted AI to verify my understanding of how Dijkstra's algorithm works with priority queues and confirm the correct handling of the threshold constraint to avoid unnecessary computation beyond the distance limit.
+When implementing topologyDetection(), I found understanding the five distinct topology types particularly difficult: CONNECTED_TREE, CONNECTED_GRAPH, FOREST, DISCONNECTED_GRAPH, and HYBRID. 
+Through my analysis, I recognized that the solution requires identifying connected components via DFS and detecting cycles within each component. The most challenging aspect was the cycle detection logic—I initially struggled to 
+understand why !neighbor.equals(parent) is critical in undirected graphs to avoid falsely detecting cycles when backtracking to the parent node. I consulted AI to verify my understanding of the DFS cycle detection approach and confirm 
+the classification logic for distinguishing between the five topology types based on component count and cycle presence.
+
+All final code implementations were written by me independently after gaining understanding through AI-assisted analysis. My coding solutions are my original work based on that understanding.
 
 Refer to the referencing guide on the LMS for details on what needs to go in
 here. If in doubt, put your references here. Ignorance is NOT an excuse for
