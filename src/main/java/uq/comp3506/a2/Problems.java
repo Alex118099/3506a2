@@ -11,7 +11,6 @@ import uq.comp3506.a2.structures.Tunnel;
 import uq.comp3506.a2.structures.UnorderedMap;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 // This is part of COMP3506 Assignment 2. Students must implement their own solutions.
@@ -42,7 +41,7 @@ public class Problems {
             return -1;
         }
 
-        Collections.sort(lightIntervals);
+        insertionSort(lightIntervals);
         
 
         double maxRadius = 0.0;
@@ -323,5 +322,22 @@ public class Problems {
     public static int susDomination(List<Integer> sites, List<List<List<Integer>>> rules,
                                      List<Integer> startingSites) {
         return -1;
+    }
+    
+    /**
+     * Insertion sort helper method - sorts an integer list in place
+     * @param list The list to be sorted
+     */
+    private static void insertionSort(List<Integer> list) {
+        for (int i = 1; i < list.size(); i++) {
+            int key = list.get(i);
+            int j = i - 1;
+            
+            while (j >= 0 && list.get(j) > key) {
+                list.set(j + 1, list.get(j));
+                j--;
+            }
+            list.set(j + 1, key);
+        }
     }
 }
