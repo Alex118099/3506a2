@@ -21,6 +21,18 @@ double rotations and confirm the correct order of rotation operations for each i
 When implementing the insert(Node<K, V> node, K key, V value) method, I recognized the recursive insertion pattern and the need to maintain AVL properties through rebalancing. 
 I consulted AI to verify my approach for handling key collision cases (updating existing values) and confirm that balance() should be called on the recursive return path to maintain tree balance.
 
+After getting the basic AVL operations working, I had to implement three search methods that were conceptually different from standard BST operations.
+For nextGeq(K key) (finding smallest key >= target), the tricky part was understanding when to keep a node as a "backup answer."
+My first attempt just returned the first node >= key, but that wasn't always the smallest one. I realized the current node might qualify, 
+but the left subtree could have something smaller that also works. The recursive backtracking logic confused me—specifically when to return the 
+left subtree's result versus the current node. Asked AI to verify my understanding of the fallback logic (the leftResult != null ? leftResult : node part).
+For nextLeq(K key) (finding largest key <= target), I knew it was the mirror of nextGeq but kept mixing up the directions. Instead of checking left subtree as backup, 
+now I needed to check the right subtree for potentially larger qualifying nodes. The symmetry made it easier once I understood nextGeq, but I still consulted AI to confirm my right-subtree priority logic was correct.
+For keysInRange(K lo, K hi), the range query was the most complex. I knew I needed in-order traversal (left-current-right) to get sorted results, but the optimization part stumped me.
+Why traverse subtrees that definitely won't contain any results? Figured out I need to prune: only go left if lo < current, only go right if hi > current. 
+The boundary conditions were confusing though—should I use < or <=? Got it wrong a few times before realizing line 416 needs < but line 421 needs <= because we're including the node itself.
+Checked with AI to verify my pruning conditions were correct and wouldn't accidentally skip valid nodes.
+
 in UnorderedMap, I found the hash table implementation particularly challenging. When implementing the resize() method, I struggled to understand the complete rehashing process. 
 Through my analysis, I recognized the critical need to reset size to 0 before rehashing—I initially couldn't grasp that failing to do this would cause double-counting when put() increments size during reinsertion. 
 I consulted AI to verify my understanding of the rehashing mechanics and clarify the trade-off between using put() for reinsertion versus directly calculating hash indices and inserting entries.

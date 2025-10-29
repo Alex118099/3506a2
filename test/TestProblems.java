@@ -28,9 +28,25 @@ public class TestProblems {
         assert Math.abs(Problems.tunnelLighting(12,
                         new ArrayList<>(Arrays.asList(4, 7, 8, 1))) - 4) <= 0.000001;
 
-        // you can use this one if you prefer jUnit testing instead
-        // assertEquals(4, Problems.tunnelLighting(12,
-        //              new ArrayList<>(Arrays.asList(4, 7, 8, 1))), 0.000001);
+        // Boundary case: single light at start
+        assert Math.abs(Problems.tunnelLighting(10,
+                        new ArrayList<>(Arrays.asList(0))) - 10) <= 0.000001;
+
+        // Boundary case: single light at end
+        assert Math.abs(Problems.tunnelLighting(10,
+                        new ArrayList<>(Arrays.asList(10))) - 10) <= 0.000001;
+
+        // Boundary case: single light in middle
+        assert Math.abs(Problems.tunnelLighting(10,
+                        new ArrayList<>(Arrays.asList(5))) - 5) <= 0.000001;
+
+        // Edge case: empty light list
+        assert Problems.tunnelLighting(10, new ArrayList<>()) == -1;
+
+        // Edge case: null light list
+        assert Problems.tunnelLighting(10, null) == -1;
+
+        System.out.println("All tunnel lighting tests passed!");
     }
 
     public static void testTopologyDetection() {
